@@ -1,67 +1,67 @@
-function Merge()
-{
-    //Setting Time complexities
-    document.getElementById("Time_Worst").innerText="O(N log N)";
-    document.getElementById("Time_Average").innerText="Θ(N log N)";
-    document.getElementById("Time_Best").innerText="Ω(N log N)";
+async function Merge() {
+    // Setting Time Complexities
+    document.getElementById("Time_Worst").innerText = "O(N log N)";
+    document.getElementById("Time_Average").innerText = "Θ(N log N)";
+    document.getElementById("Time_Best").innerText = "Ω(N log N)";
 
-    //Setting Space complexity
-    document.getElementById("Space_Worst").innerText="O(N)";
+    // Setting Space Complexity
+    document.getElementById("Space_Worst").innerText = "O(N)";
 
-    c_delay=0;
+    c_delay = 0;
 
-    merge_partition(0,array_size-1);
+    await merge_partition(0, array_size - 1);
 
-    enable_buttons();
+    if (!sortingStopped) enable_buttons(); // Enable buttons only if sorting completed
 }
 
-function merge_sort(start,mid,end)
-{
-    var p=start,q=mid+1;
+async function merge_sort(start, mid, end) {
+    if (sortingStopped) return; // Stop sorting if flagged
 
-    var Arr=[],k=0;
+    let p = start,
+        q = mid + 1;
+    let Arr = [],
+        k = 0;
 
-    for(var i=start; i<=end; i++)
-    {
-        if(p>mid)
-        {
-            Arr[k++]=div_sizes[q++];
-            div_update(divs[q-1],div_sizes[q-1],"red");//Color update
+    for (let i = start; i <= end; i++) {
+        if (sortingStopped) return; // Stop sorting if flagged
+
+        if (p > mid) {
+            Arr[k++] = div_sizes[q++];
+            div_update(divs[q - 1], div_sizes[q - 1], "red"); // Color update
+        } else if (q > end) {
+            Arr[k++] = div_sizes[p++];
+            div_update(divs[p - 1], div_sizes[p - 1], "red"); // Color update
+        } else if (div_sizes[p] < div_sizes[q]) {
+            Arr[k++] = div_sizes[p++];
+            div_update(divs[p - 1], div_sizes[p - 1], "red"); // Color update
+        } else {
+            Arr[k++] = div_sizes[q++];
+            div_update(divs[q - 1], div_sizes[q - 1], "red"); // Color update
         }
-        else if(q>end)
-        {
-            Arr[k++]=div_sizes[p++];
-            div_update(divs[p-1],div_sizes[p-1],"red");//Color update
-        }
-        else if(div_sizes[p]<div_sizes[q])
-        {
-            Arr[k++]=div_sizes[p++];
-            div_update(divs[p-1],div_sizes[p-1],"red");//Color update
-        }
-        else
-        {
-            Arr[k++]=div_sizes[q++];
-            div_update(divs[q-1],div_sizes[q-1],"red");//Color update
-        }
+
+        await delay(); // Delay for visualization
     }
 
-    for(var t=0;t<k;t++)
-    {
-        div_sizes[start++]=Arr[t];
-        div_update(divs[start-1],div_sizes[start-1],"green");//Color update
+    for (let t = 0; t < k; t++) {
+        if (sortingStopped) return; // Stop sorting if flagged
+
+        div_sizes[start++] = Arr[t];
+        div_update(divs[start - 1], div_sizes[start - 1], "green"); // Color update
+        await delay(); // Delay for visualization
     }
 }
 
-function merge_partition(start,end)
-{
-    if(start < end)
-    {
-        var mid=Math.floor((start + end) / 2);
-        div_update(divs[mid],div_sizes[mid],"yellow");//Color update
+async function merge_partition(start, end) {
+    if (sortingStopped) return; // Stop sorting if flagged
 
-        merge_partition(start,mid);
-        merge_partition(mid+1,end);
+    if (start < end) {
+        const mid = Math.floor((start + end) / 2);
+        div_update(divs[mid], div_sizes[mid], "yellow"); // Color update
+        await delay(); // Delay for visualization
 
-        merge_sort(start,mid,end);
+        await merge_partition(start, mid); // Left partition
+        await merge_partition(mid + 1, end); // Right partition
+
+        await merge_sort(start, mid, end); // Merge the two partitions
     }
 }
